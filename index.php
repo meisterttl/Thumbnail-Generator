@@ -87,7 +87,7 @@ session_start();
 									</fieldset>
 							<?php
 								$imageType = $_SESSION[ "fileType" ];
-								if( $imageType == "image/png" || $imageType == "image/gif" ){
+								if( $imageType == "image/png" ){
 									?>
 									<fieldset class="transparency">
 										<legend>Keep the transparency?</legend>
