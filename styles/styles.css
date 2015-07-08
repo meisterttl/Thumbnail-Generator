@@ -8,3 +8,245 @@
 #myCanvas {
 	border: 1px solid #000;
 }
+
+body {
+	background-color: #bfbfbf;
+}
+
+h1, p, legend, label {
+	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+.wrapper {
+	width: 960px;
+	margin: 0 auto;
+}
+
+header h1 {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	font-size: 2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+section > p {
+	margin-bottom: 2em;
+	color: red;
+	text-align: center;
+}
+
+.fileUpload legend {
+	text-align: center;
+}
+
+.fileUpload input {
+	display: block;
+	margin: 20px auto;
+	padding: 10px;
+	cursor: pointer;
+	-webkit-transition: all 0.2s;
+	   -moz-transition: all 0.2s;
+		 -o-transition: all 0.2s;
+			transition: all 0.2s;
+}
+
+.fileUpload input:nth-child(3) {
+	background-color: #fff;
+	box-shadow: 2px 2px 5px 2px #999;
+}
+
+.fileUpload input:last-child {
+	padding: 5px 10px;
+}
+
+.fileUpload input:nth-child(3):hover,
+.fileUpload input:nth-child(3):focus,
+.fileUpload input:nth-child(3):active,
+.fileUpload input:last-child:hover,
+.fileUpload input:last-child:focus,
+.fileUpload input:last-child:active {
+	background-color: #28f;
+	color: #fff;
+}
+
+section > div {
+	float: right;
+	width: 25%;
+}
+
+section > div:first-child {
+	float: left;
+	width: 70%;
+	height: 672px;
+	margin-right: 5%;
+	position: relative;
+	background-color: #fff;
+	box-shadow: 2px 2px 5px 2px #999;
+}
+
+.orientation,
+.transparency,
+.dimension {
+	margin-bottom: 40px;
+	width: 100%;
+}
+
+.orientation legend,
+.transparency legend,
+.dimension legend {
+	margin-bottom: 10px;
+}
+
+.orientation input,
+.transparency input,
+.dimension input {
+	display: none;
+}
+
+.orientation label,
+.transparency label,
+.dimension label {
+	background-color: #eee;
+	background-image: linear-gradient( to right, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0.2) );
+	font-size: 0.7em;
+	color: #222;
+	text-shadow: 0 1px #fff;
+	text-align: center;
+	border-bottom: 1px solid #fff;
+	cursor: pointer;
+	-webkit-transition: background-color 0.2s, color 0.2s, text-shadow 0.2s;
+	   -moz-transition: background-color 0.2s, color 0.2s, text-shadow 0.2s;
+		 -o-transition: background-color 0.2s, color 0.2s, text-shadow 0.2s;
+			transition: background-color 0.2s, color 0.2s, text-shadow 0.2s;
+}
+
+.orientation label:hover,
+.orientation label:focus,
+.orientation label:active,
+.transparency label:hover,
+.transparency label:focus,
+.transparency label:active,
+.dimension label:hover,
+.dimension label:focus,
+.dimension label:active {
+	background-color: #28f;
+	color: #fff;
+	text-shadow: 0 -1px hsla(0, 0%, 0%, 0.8);
+}
+
+.orientation input[type="radio"]:checked + label,
+.transparency input[type="radio"]:checked + label,
+.dimension input[type="radio"]:checked + label {
+	background-color: #28f;
+	color: #fff;
+	text-shadow: 0 -1px hsla(0, 0%, 0%, 0.8);
+}
+
+.orientation label {
+	float: left;
+	width: 33.33%;
+	height: 40px;
+	line-height: 40px;
+	border-right: 1px solid #fff;
+}
+
+.orientation label:nth-of-type(3n) {
+	border-right: 0px none transparent;
+	box-shadow: 1px 0px 0px 0px #999;
+}
+
+.orientation label:nth-of-type(7),
+.orientation label:nth-of-type(8),
+.orientation label:last-of-type {
+	border-bottom: 0px none transparent;
+	box-shadow: 0px 1px 0px 0px #999;
+}
+
+.orientation label:first-of-type {
+	border-radius: 10px 0 0 0; 
+}
+
+.orientation label:nth-of-type(3) {
+	border-radius: 0 10px 0 0;
+}
+
+.orientation label:nth-of-type(7) {
+	border-radius: 0 0 0 10px;
+}
+
+.orientation label:last-of-type {
+	border-radius: 0 0 10px 0;
+	box-shadow: 1px 1px 0px 0px #999;
+}
+
+.transparency label {
+	float: left;
+	width: 120px;
+	height: 50px;
+	border-bottom: 0px none transparent;
+	line-height: 50px;
+	box-shadow: 1px 1px 0px 0px #999;
+}
+
+.transparency label:first-of-type {
+	border-radius: 10px 0 0 10px;
+	border-right: 1px solid #fff;
+}
+
+.transparency label:last-of-type {
+	border-radius: 0 10px 10px 0;
+}
+
+.dimension label {
+	display: block;
+	padding: 10px;
+	width: 100%;
+	box-shadow: 1px 0px 0px 0px #999;
+}
+
+.dimension label:first-of-type {
+	border-radius: 10px 10px 0 0;
+}
+
+.dimension label:last-of-type {
+	border-radius: 0 0 10px 10px;
+	border-bottom: 0px none transparent;
+	box-shadow: 1px 1px 0px 0px #999;
+}
+
+.submitButton {
+	padding: 10px;
+	width: 100%;
+	-webkit-transition: all 0.2s;
+	   -moz-transition: all 0.2s;
+		 -o-transition: all 0.2s;
+			transition: all 0.2s;
+	cursor: pointer;
+}
+
+.submitButton:hover,
+.submitButton:focus,
+.submitButton:active {
+	background-color: #28f;
+	color: #fff;
+}
+
+section > div.resizedImage {
+	float: none;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.resizedImage p {
+	margin-bottom: 1em;
+	text-align: center;
+}
+
+.resizedImage img {
+	display: block;
+	margin: 0 auto;
+}

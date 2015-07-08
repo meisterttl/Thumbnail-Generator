@@ -11,12 +11,6 @@ if( isset( $_POST[ "fileupload" ] ) ){
 			$fileName = $_FILES[ "filename" ][ "name" ];
 			$fileTempName = $_FILES[ "filename" ][ "tmp_name" ];
 			
-			echo "<p>Name: ".$fileName."</p>";
-			echo "<p>Type: ".$fileType."</p>";
-			echo "<p>Size in bytes: ".$_FILES[ "filename" ][ "size" ]."</p>";
-			echo "<p>Temporary Name: ".$fileTempName."</p>";
-			echo "<p>Error: ".$_FILES[ "filename" ][ "error" ]."</p>";
-			
 			$result = move_uploaded_file( $_FILES[ "filename" ][ "tmp_name" ], DESTINATION_FOLDER . $fileName );
 			
 			if( $result == true ){
@@ -29,15 +23,18 @@ if( isset( $_POST[ "fileupload" ] ) ){
 				
 				header( "Location: ./index.php" );
 			}else{
-				echo "<p>File Upload unsuccessful.</p>";
+				$_SESSION[ "errorMessage" ] = "<p>There has been an error while processing the file. Please try again!</p>";
+				header("Location: ./index.php");
 			}
 			
 		}else{
-			//header("Location: ./index.php");
+			$_SESSION[ "errorMessage" ] = "<p>Please upload a valid file type such as JPEG, PNG or GIF!</p>";
+			header("Location: ./index.php");
 		}
 		
 	}else{
-		//header("Location: ./index.php");
+		$_SESSION[ "errorMessage" ] = "<p>Please upload an image file to proceed!</p>";
+		header("Location: ./index.php");
 	}
 }else if( isset( $_POST[ "thumbgen" ] ) ){
 	$targetImage = $_SESSION[ "imageFile" ];
@@ -55,11 +52,30 @@ if( isset( $_POST[ "fileupload" ] ) ){
 		$sourceImage = imagecreatefromgif( $targetImage );
 	}
 	
+	if( isset( $_POST[ "transparency" ] ) ){
+		$transparency = $_POST[ "transparency" ];
+		if( $transparency == "yes" && $imageType == "image/png" ){
+			imagealphablending( $sourceImage, true );
+		}
+	}
+	
 	if( isset( $_POST[ "orientation" ] ) && isset( $_POST[ "dimension" ] ) ){		
 		$dimension = explode( "d", $_POST[ "dimension" ] );
 		$cropSize = $dimension[1];
 		
 		$resultImage = ImageCreateTrueColor( $cropSize, $cropSize );
+		
+		if( isset( $_POST[ "transparency" ] ) ){
+			$transparency = $_POST[ "transparency" ];
+			if( $transparency == "yes" ){
+				if( $imageType == "image/png" ){
+					imagealphablending( $resultImage, false );
+					imagesavealpha( $resultImage, true );
+				}else if( $imageType == "image/gif" ){
+					imagetruecolortopalette( $resultImage, true, 256 );
+				}
+			}
+		}
 		
 		$sourceWidth = imagesx( $sourceImage );
 		$sourceHeight = imagesy( $sourceImage );
@@ -109,11 +125,12 @@ if( isset( $_POST[ "fileupload" ] ) ){
 		}
 		
 		$_SESSION[ "outputName" ] = $outputName;
-		//unset( $_SESSION[ "imageFile" ] );
+		unset( $_SESSION[ "imageFile" ] );
 		
 		header( "Location: ./index.php" );
 	}else{
-		//header( "Location: ./index.php" );
+		$_SESSION[ "errorMessage" ] = "<p>Please select the following parameters to generate a thumbnail!</p>";
+		header("Location: ./index.php");
 	}
 }
 ?>
