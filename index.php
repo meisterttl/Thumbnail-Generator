@@ -41,7 +41,8 @@ session_start();
 								</fieldset>
 							</form><?php
 						}else{
-							echo "<div><div class='image-container' id='imageContainer'><img src='".$_SESSION[ "imageFile" ]."'></div></div>";
+							$sourceImage = $_SESSION[ "imageFile" ];
+							echo "<div><div class='image-container' id='imageContainer'><img src='".$sourceImage."'></div></div>";
 							
 							$imageWidth = $_SESSION['imageWidth'];
 							$imageHeight = $_SESSION['imageHeight'];
@@ -66,23 +67,23 @@ session_start();
 									<input type='hidden' name='thumbgen'>
 									<fieldset class="orientation">
 										<legend>Orientation</legend>
-										<input type='radio' name='orientation' value='topleft' id="topleft">
+										<input type='radio' name='orientation' value='top-left' id="topleft">
 										<label for='topleft'>Top Left</label>
-										<input type='radio' name='orientation' value='topcenter' id="topcenter">
+										<input type='radio' name='orientation' value='top-center' id="topcenter">
 										<label for='topcenter'>Top Center</label>
-										<input type='radio' name='orientation' value='topright' id="topright">
+										<input type='radio' name='orientation' value='top-right' id="topright">
 										<label for='topright'>Top Right</label>
-										<input type='radio' name='orientation' value='centerleft' id="centerleft">
+										<input type='radio' name='orientation' value='center-left' id="centerleft">
 										<label for='centerleft'>Center Left</label>
-										<input type='radio' name='orientation' value='center' id="center">
+										<input type='radio' name='orientation' value='center-center' id="center">
 										<label for='center'>Center</label>
-										<input type='radio' name='orientation' value='centerright' id="centerright">
+										<input type='radio' name='orientation' value='center-right' id="centerright">
 										<label for='centerright'>Center Right</label>
-										<input type='radio' name='orientation' value='bottomleft' id="bottomleft">
+										<input type='radio' name='orientation' value='bottom-left' id="bottomleft">
 										<label for='bottomleft'>Bottom Left</label>
-										<input type='radio' name='orientation' value='bottomcenter' id="bottomcenter">
+										<input type='radio' name='orientation' value='bottom-center' id="bottomcenter">
 										<label for='bottomcenter'>Bottom Center</label>
-										<input type='radio' name='orientation' value='bottomright' id="bottomright">
+										<input type='radio' name='orientation' value='bottom-right' id="bottomright">
 										<label for='bottomright'>Bottom Right</label>
 									</fieldset>
 							<?php
@@ -102,24 +103,25 @@ session_start();
 									<fieldset class="dimension">
 										<legend>Dimension</legend>
 							<?php
-							echo "<input type='radio' name='dimension' value='d".$maxDimension."' id='d".$maxDimension."'>";
-							echo "<label for='d".$maxDimension."'>".$maxDimension."x".$maxDimension."</label>";
-							for( $i = $numOption; $i > 0; $i-- ){
-								$dimension = $i*100;
-								echo "<input type='radio' name='dimension' value='d".$dimension."' id='d".$dimension."'><label for='d".$dimension."'>".$dimension."x".$dimension."</label>";
+								echo "<input type='radio' name='dimension' value='d".$maxDimension."' id='d".$maxDimension."'>";
+								echo "<label for='d".$maxDimension."'>".$maxDimension."x".$maxDimension."</label>";
+								for( $i = $numOption; $i > 0; $i-- ){
+									$dimension = $i*100;
+									echo "<input type='radio' name='dimension' value='d".$dimension."' id='d".$dimension."'><label for='d".$dimension."'>".$dimension."x".$dimension."</label>";
+								}
+								echo "</fieldset><input type='submit' value='Submit' class='submitButton'></form></div>";
 							}
-							echo "</fieldset><input type='submit' value='Submit' class='submitButton'></form></div>";
+						}else{
+							echo "<div class='resizedImage'><p>Right click on the resized image, then press 'Save Image as...'</p>";
+							echo "<img src='./" . $_SESSION[ "outputName" ] . "'></div>";
+							unset( $_SESSION[ "outputName" ] );
 						}
-					}else{
-						echo "<div class='resizedImage'><p>Right click on the resized image, then press 'Save Image as...'</p>";
-						echo "<img src='./" . $_SESSION[ "outputName" ] . "'></div>";
-						unset( $_SESSION[ "outputName" ] );
-					}
-				?>
+					?>
 			</section>
 		</main>
 	</div>
-<script src="scripts/jquery-1.11.2.min.js"></script>
-<script src="scripts/scripts.js"></script>
+	
+<!--<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/scripts.js"></script>-->
 </body>
 </html>

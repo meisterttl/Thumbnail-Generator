@@ -76,6 +76,7 @@ section > div {
 }
 
 section > div:first-child {
+	display: table;
 	float: left;
 	width: 70%;
 	height: 672px;
@@ -83,6 +84,12 @@ section > div:first-child {
 	position: relative;
 	background-color: #fff;
 	box-shadow: 2px 2px 5px 2px #999;
+}
+
+.image-container {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
 }
 
 .orientation,

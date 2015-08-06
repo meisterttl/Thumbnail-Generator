@@ -114,11 +114,15 @@ if( isset( $_POST[ "thumbgen" ] ) ){
 		$sourceHeight = imagesy( $sourceImage );
 		$orientation = $_POST[ "orientation" ];
 		
-		$originPoint = thumbOrientation( $orientation, $sourceWidth, $sourceHeight );
+		$originPoint = thumbOrientation( $orientation, $sourceWidth, $sourceHeight, $cropSize );
 		$originX = $originPoint[0];
 		$originY = $originPoint[1];
 		
 		imagecopyresampled( $resultImage, $sourceImage, 0, 0, $originX, $originY, $cropSize, $cropSize, $cropSize, $cropSize );
+	}else{
+		$_SESSION[ "errorMessage" ] = "<p>Please select the following parameters to generate a thumbnail!</p>";
+		
+		header( "Location: ./index.php" );
 	}
 
 // Displaying the thumbnail
@@ -138,8 +142,6 @@ if( isset( $_POST[ "thumbgen" ] ) ){
 	$_SESSION[ "outputName" ] = $outputName;
 	unset( $_SESSION[ "imageFile" ] );
 
-}else{
-	$_SESSION[ "errorMessage" ] = "<p>Please select the following parameters to generate a thumbnail!</p>";
 }
 
 header( "Location: ./index.php" );
@@ -147,7 +149,7 @@ header( "Location: ./index.php" );
 
 <?php
 // Functions for processing the image
-function thumbOrientation( $thumbOrigin, $thumbWidth, $thumbHeight ){
+function thumbOrientation( $thumbOrigin, $thumbWidth, $thumbHeight, $thumbSize ){
 	$origin = explode( "-", $thumbOrigin );
 	$vertical = $origin[0];
 	$horizontal = $origin[1];
@@ -155,17 +157,17 @@ function thumbOrientation( $thumbOrigin, $thumbWidth, $thumbHeight ){
 	if( $horizontal == "left" ){
 		$valueX = 0;
 	}else if( $horizontal == "center" ){
-		$valueX = ( $thumbWidth - $cropSize ) / 2;
+		$valueX = ( $thumbWidth - $thumbSize ) / 2;
 	}else{
-		$valueX = $thumbWidth - $cropSize;
+		$valueX = $thumbWidth - $thumbSize;
 	}
 	
 	if( $vertical == "top" ){
 		$valueY = 0;
 	}else if( $vertical == "center" ){
-		$valueY = ( $thumbHeight - $cropSize ) / 2;
+		$valueY = ( $thumbHeight - $thumbSize ) / 2;
 	}else{
-		$valueY = $thumbHeight - $cropSize;
+		$valueY = $thumbHeight - $thumbSize;
 	}
 	
 	return array( $valueX, $valueY );
