@@ -1,49 +1,86 @@
 <?php
 session_start();
 
+// Defining constants
 const DESTINATION_FOLDER = "./images/";
+?>
 
+<?php
+// Defining a class for source image process
+class ImageProcess{
+	public $imageType;
+	private $imageName;
+	private $imageTempName;
+	private $fileSize;
+	public $saveResult;
+	
+	public function setImageType( $imageFile ){
+		$this->imageType = $imageFile[ "type" ];
+	}
+	
+	public function setImageName( $imageFile ){
+		$this->imageName = $imageFile[ "name" ];
+	}
+	
+	public function setTempName( $imageFile){
+		$this->imageTempName = $imageFile[ "tmp_name" ];
+	}
+	
+	public function storeSourceImage(){
+		$this->saveResult = move_uploaded_file( $this->imageTempName , DESTINATION_FOLDER . $this->imageName );
+	}
+	
+	public function getSourceData(){
+		$this->fileSize = getimagesize( DESTINATION_FOLDER . $this->imageName );
+		$_SESSION[ "imageFile" ] = DESTINATION_FOLDER . $this->imageName;
+		$_SESSION[ "imageWidth" ] = $this->fileSize[0];
+		$_SESSION[ "imageHeight" ] = $this->fileSize[1];
+		$_SESSION[ "fileType" ] = $this->imageType;
+	}
+}
+
+$processImage = new ImageProcess();
+?>
+
+<?php
+// Getting the image file, validating and temporarily storing it.
 if( isset( $_POST[ "fileupload" ] ) ){
-	if( isset( $_FILES[ "filename" ] ) ){
-		$fileType = $_FILES[ "filename" ][ "type" ];
+	$file = $_FILES[ "filename" ];
+	
+	if( isset( $file ) ){
+		$processImage->setImageType( $file );
 		
-		if( $fileType == "image/jpeg" || $fileType == "image/png" || $fileType == "image/gif" ){
-			$fileName = $_FILES[ "filename" ][ "name" ];
-			$fileTempName = $_FILES[ "filename" ][ "tmp_name" ];
+		if( $processImage->imageType == "image/jpeg" || $processImage->imageType == "image/png" || $processImage->imageType == "image/gif" ){
+			$processImage->setImageName( $file );
+			$processImage->setTempName( $file );
+			$processImage->storeSourceImage();
 			
-			$result = move_uploaded_file( $_FILES[ "filename" ][ "tmp_name" ], DESTINATION_FOLDER . $fileName );
-			
-			if( $result == true ){
-				echo "<p>File Upload successful.</p>";
-				$fileSize = getimagesize( DESTINATION_FOLDER . $fileName );
-				$_SESSION[ "imageFile" ] = DESTINATION_FOLDER . $fileName;
-				$_SESSION[ "imageWidth" ] = $fileSize[0];
-				$_SESSION[ "imageHeight" ] = $fileSize[1];
-				$_SESSION[ "fileType" ] = $fileType;
-				
-				header( "Location: ./index.php" );
+			if( $processImage->saveResult == true ){
+				$processImage->getSourceData();
 			}else{
 				$_SESSION[ "errorMessage" ] = "<p>There has been an error while processing the file. Please try again!</p>";
-				header("Location: ./index.php");
 			}
 			
 		}else{
 			$_SESSION[ "errorMessage" ] = "<p>Please upload a valid file type such as JPEG, PNG or GIF!</p>";
-			header("Location: ./index.php");
 		}
 		
 	}else{
 		$_SESSION[ "errorMessage" ] = "<p>Please upload an image file to proceed!</p>";
-		header("Location: ./index.php");
 	}
-}else if( isset( $_POST[ "thumbgen" ] ) ){
+
+}
+?>
+
+<?php
+// Processing the image and preparing for thumbnail generation
+if( isset( $_POST[ "thumbgen" ] ) ){
 	$targetImage = $_SESSION[ "imageFile" ];
 	$imageType = $_SESSION[ "fileType" ];
 	
 	$targetPath = pathinfo( $targetImage );
 	$sourceName = $targetPath[ "filename" ];
 	
-	//header( "Content-Type: ".$imageType );
 	if( $imageType == "image/jpeg" ){
 		$sourceImage = imagecreatefromjpeg( $targetImage );
 	}else if( $imageType == "image/png" ){
@@ -67,70 +104,70 @@ if( isset( $_POST[ "fileupload" ] ) ){
 		
 		if( isset( $_POST[ "transparency" ] ) ){
 			$transparency = $_POST[ "transparency" ];
-			if( $transparency == "yes" ){
-				if( $imageType == "image/png" ){
-					imagealphablending( $resultImage, false );
-					imagesavealpha( $resultImage, true );
-				}else if( $imageType == "image/gif" ){
-					imagetruecolortopalette( $resultImage, true, 256 );
-				}
+			if( $transparency == "yes" && imageType == "image/png" ){
+				imagealphablending( $resultImage, false );
+				imagesavealpha( $resultImage, true );
 			}
 		}
 		
 		$sourceWidth = imagesx( $sourceImage );
 		$sourceHeight = imagesy( $sourceImage );
-		
 		$orientation = $_POST[ "orientation" ];
 		
-		if( $orientation == "topleft" ){
-			$originX = 0;
-			$originY = 0;
-		}else if( $orientation == "topcenter" ){
-			$originX = ( $sourceWidth - $cropSize ) / 2;
-			$originY = 0;
-		}else if( $orientation == "topright" ){
-			$originX = $sourceWidth - $cropSize;
-			$originY = 0;
-		}else if( $orientation == "centerleft" ){
-			$originX = 0;
-			$originY = ( $sourceHeight - $cropSize ) / 2;
-		}else if( $orientation == "center" ){
-			$originX = ( $sourceWidth - $cropSize ) / 2;
-			$originY = ( $sourceHeight - $cropSize ) / 2;
-		}else if( $orientation == "centerright" ){
-			$originX = $sourceWidth - $cropSize;
-			$originY = ( $sourceHeight - $cropSize ) / 2;
-		}else if( $orientation == "bottomleft" ){
-			$originX = 0;
-			$originY = $sourceHeight - $cropSize;
-		}else if( $orientation == "bottomcenter" ){
-			$originX = ( $sourceWidth - $cropSize ) / 2;
-			$originY = $sourceHeight - $cropSize;
-		}else{
-			$originX = $sourceWidth - $cropSize;
-			$originY = $sourceHeight - $cropSize;
-		}
+		$originPoint = thumbOrientation( $orientation, $sourceWidth, $sourceHeight );
+		$originX = $originPoint[0];
+		$originY = $originPoint[1];
 		
 		imagecopyresampled( $resultImage, $sourceImage, 0, 0, $originX, $originY, $cropSize, $cropSize, $cropSize, $cropSize );
-		
-		if( $imageType == "image/jpeg" ){
-			$outputName = $sourceName . "-resized.jpg";
-			imagejpeg( $resultImage, $outputName, 100 );
-		}else if( $imageType == "image/png" ){
-			$outputName = $sourceName . "-resized.png";
-			imagepng( $resultImage, $outputName, 9 );
-		}else if( $imageType == "image/gif" ){
-			$outputName = $sourceName . "-resized.gif";
-			imagegif( $resultImage, $outputName );
-		}
-		
-		$_SESSION[ "outputName" ] = $outputName;
-		unset( $_SESSION[ "imageFile" ] );
-		
-		header( "Location: ./index.php" );
-	}else{
-		$_SESSION[ "errorMessage" ] = "<p>Please select the following parameters to generate a thumbnail!</p>";
-		header("Location: ./index.php");
 	}
+
+// Displaying the thumbnail
+	$outputName = $sourceName . "-resized.";
+	
+	if( $imageType == "image/jpeg" ){
+		$outputName .= "jpg";
+		imagejpeg( $resultImage , $outputName , 100 );
+	}else if( $imageType == "image/png" ){
+		$outputName .= "png";
+		imagepng( $resultImage , $outputName , 9 );
+	}else if( $imageType == "image/gif" ){
+		$outputName .= "gif";
+		imagegif( $resultImage , $outputName );
+	}
+
+	$_SESSION[ "outputName" ] = $outputName;
+	unset( $_SESSION[ "imageFile" ] );
+
+}else{
+	$_SESSION[ "errorMessage" ] = "<p>Please select the following parameters to generate a thumbnail!</p>";
+}
+
+header( "Location: ./index.php" );
+?>
+
+<?php
+// Functions for processing the image
+function thumbOrientation( $thumbOrigin, $thumbWidth, $thumbHeight ){
+	$origin = explode( "-", $thumbOrigin );
+	$vertical = $origin[0];
+	$horizontal = $origin[1];
+	
+	if( $horizontal == "left" ){
+		$valueX = 0;
+	}else if( $horizontal == "center" ){
+		$valueX = ( $thumbWidth - $cropSize ) / 2;
+	}else{
+		$valueX = $thumbWidth - $cropSize;
+	}
+	
+	if( $vertical == "top" ){
+		$valueY = 0;
+	}else if( $vertical == "center" ){
+		$valueY = ( $thumbHeight - $cropSize ) / 2;
+	}else{
+		$valueY = $thumbHeight - $cropSize;
+	}
+	
+	return array( $valueX, $valueY );
 }
 ?>
